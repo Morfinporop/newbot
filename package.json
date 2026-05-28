@@ -1,0 +1,19 @@
+{
+  "name": "soundforge-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "@discordjs/voice": "^0.18.0",
+    "discord-player": "^7.2.0",
+    "@discord-player/extractor": "^7.2.0",
+    "mediaplex": "^1.0.0",
+    "mongoose": "^8.8.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
