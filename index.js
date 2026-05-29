@@ -14,7 +14,7 @@ const http = require('http');
 const TOKEN = process.env.DISCORD_TOKEN;
 const CLIENT_ID = process.env.CLIENT_ID;
 const GUILD_ID = process.env.GUILD_ID;
-const DB_URL = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL;
+const DB_URL = process.env.DATABASE_URL || process.env.DATABASE_PUBLIC_URL || 'postgresql://postgres:nJzLejgzLPytNXhIKcEEbbJurUTftAqd@postgres.railway.internal:5432/railway';
 
 if (!TOKEN) { console.error('NO TOKEN'); process.exit(1); }
 
