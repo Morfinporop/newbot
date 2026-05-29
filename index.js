@@ -104,8 +104,26 @@ async function playNext(gid) {
 async function enqueue(guild, vc, ch, tracks) {
   let q = getQ(guild.id);
   if (!q) {
-    const conn = joinVoiceChannel({ channelId: vc.id, guildId: guild.id, adapterCreator: guild.voiceAdapterCreator, selfDeaf: true });
-    try { await entersState(conn, VoiceConnectionStatus.Ready, 15000); } catch { conn.destroy(); throw new Error('Cannot connect'); }
+    const conn = joinVoiceChannel({
+      channelId: vc.id,
+      guildId: guild.id,
+      adapterCreator: guild.voiceAdapterCreator,
+      selfDeaf: true,
+    });
+
+    // Retry logic — Railway иногда медленно устанавливает UDP
+    let connected = false;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await entersState(conn, VoiceConnectionStatus.Ready, 30000);
+        connected = true;
+        break;
+      } catch {
+        console.log('Voice connect attempt', attempt + 1, 'failed, retrying...');
+        if (attempt === 2) { conn.destroy(); throw new Error('Voice connection failed after 3 attempts. Railway may not support UDP.'); }
+        await new Promise(r => setTimeout(r, 2000));
+      }
+    }
     const ap = createAudioPlayer(); conn.subscribe(ap);
     q = { conn, ap, res: null, tracks: [], current: null, vol: 60, loop: 0, paused: false, ch };
     ap.on(AudioPlayerStatus.Idle, () => { const qq=getQ(guild.id); if(!qq)return; if(qq.loop===1&&qq.current)qq.tracks.unshift({...qq.current}); if(qq.loop===2&&qq.current)qq.tracks.push({...qq.current}); playNext(guild.id); });
